@@ -23,7 +23,7 @@ impl LinkedList{
     self.size // (*self).size
   }
 
-  pub fn isEmpty(&self) -> bool {
+  pub fn is_empty(&self) -> bool {
     self.size == 0 // self.get_size() == 0
   }
 
@@ -31,6 +31,13 @@ impl LinkedList{
     let new_node: Box<Node> = Box::new(Node::new(value, self.head.take()));
     self.head = Some(new_node);
     self.size += 1;
+  }
+
+  pub fn pop(&mut self) -> Option<u32> {
+    let node: Box<Node> = self.head.take()?;
+    self.head = node.next;
+    self.size -= 1;
+    Some(node.value)
   }
 
   pub fn display(&self){
@@ -76,11 +83,13 @@ impl LinkedList{
 
 fn main() {
   let mut list: LinkedList = LinkedList::new();
-  println!("{}", list.isEmpty());
-  assert!(list.isEmpty());
+  println!("{}", list.is_empty());
+  assert!(list.is_empty());
   assert_eq!(list.get_size(), 0);
   for i in 1..10 {
     list.push(i);
   }
+  list.display();
+  println!("Top Element: {}", list.pop().unwrap());
   list.display();
 }
