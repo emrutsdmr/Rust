@@ -1,3 +1,5 @@
+use std::fmt;
+
 struct Node{
   value: u32,
   next: Option<Box<Node>>,
@@ -40,6 +42,7 @@ impl LinkedList{
     Some(node.value)
   }
 
+/*
   pub fn display(&self){
     let mut current: &Option<Box<Node>> = &self.head;
     let mut result = String::new();
@@ -55,7 +58,6 @@ impl LinkedList{
     println!("{}", result);
   }
 
-/*
   pub fn push(&mut self, value: u32) {
     let new_node = Box::new(Node::new(value, None));
   
@@ -80,6 +82,35 @@ impl LinkedList{
 */
 }
 
+impl fmt::Display for LinkedList {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    let mut current: &Option<Box<Node>> = &self.head;
+    let mut result = String::new();
+
+    loop {
+      match current {
+        Some(node) => {
+          result = format!("{} {}", result, node.value);
+          current = &node.next;
+        },
+        None => break,
+      }
+    }
+
+    write!(f, "{}", result)
+  }
+}
+
+impl Drop for LinkedList {
+  fn drop(&mut self) {
+    let mut current = self.head.take();
+
+    while let Some(mut node) = current {
+      current = node.next.take();
+    }
+  }
+}
+
 
 fn main() {
   let mut list: LinkedList = LinkedList::new();
@@ -89,7 +120,9 @@ fn main() {
   for i in 1..10 {
     list.push(i);
   }
-  list.display();
+//  list.display();
+  println!("{}", list);
   println!("Top Element: {}", list.pop().unwrap());
-  list.display();
+//  list.display();
+  println!("{}", list);
 }
