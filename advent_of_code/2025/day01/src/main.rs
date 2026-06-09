@@ -1,27 +1,40 @@
 use std::fs;
 
-fn main() {
-  let input = fs::read_to_string("input.txt").unwrap();
-  let mut result: u32  = 0;
-  let mut count:  i16 = 50;
-  let mut number: i16;
+const START_POSITION: i32 = 50;
+const DIAL_SIZE: i32 = 100;
+
+fn part1(input: &str) -> u32 {
+  let mut position = START_POSITION;
+  let mut count = 0;
 
   for line in input.lines() {
-    number = (&line[1..]).parse::<i16>().unwrap();
-    number %= 100;
-    if line.chars().next().unwrap() == 'L'{ //line.as_bytes()[0] as char
-      number *= -1;
+    let (direction, mut distance) = parse_instruction(line);
+    distance %= DIAL_SIZE;
+    if direction == 'L'{ //line.as_bytes()[0] as char
+      distance *= -1;
     }
-    count += number;
-    if count > 99 {
-      count -= 100;
+    position += distance;
+    if position >= DIAL_SIZE {
+      position -= DIAL_SIZE;
     }
-    else if count < 0 {
-      count += 100;
+    else if position < 0 {
+      position += DIAL_SIZE;
     }
-    if count == 0 {
-      result += 1;
+    if position == 0 {
+      count += 1;
     }
   }
-  println!("{}", result);
+  count
+}
+
+fn parse_instruction(line: &str) -> (char, i32) {
+  let direction = line.chars().next().unwrap();
+  let distance = line[1..].parse::<i32>().unwrap();
+
+  (direction, distance)
+}
+
+fn main() {
+  let input = fs::read_to_string("input.txt").unwrap();
+  println!("Part 1 Solution: {}", part1(&input));
 }
