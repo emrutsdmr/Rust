@@ -27,6 +27,44 @@ fn part1(input: &str) -> u32 {
   count
 }
 
+fn part2(input: &str) -> u32 {
+  let mut position = START_POSITION;
+  let mut count: u32 = 0;
+
+  for line in input.lines() {
+    let (direction, mut distance) = parse_instruction(line);
+    count += (distance / DIAL_SIZE) as u32;
+    distance %= DIAL_SIZE;
+
+    if direction == 'L'{ //line.as_bytes()[0] as char
+      distance *= -1;
+    }
+
+    if position == 0 {
+      if distance < 0 {
+        distance += DIAL_SIZE;
+      }
+      position += distance;
+    }
+    else {
+      position += distance;
+
+      if position == 0 {
+        count += 1;
+      }
+      else if position >= DIAL_SIZE {
+        position -= DIAL_SIZE;
+        count += 1;
+      }
+      else if position < 0 {
+        position += DIAL_SIZE;
+        count += 1;
+      }
+    }
+  }
+  count
+}
+
 fn parse_instruction(line: &str) -> (char, i32) {
   let direction = line.chars().next().unwrap();
   let distance = line[1..].parse::<i32>().unwrap();
@@ -37,4 +75,5 @@ fn parse_instruction(line: &str) -> (char, i32) {
 fn main() {
   let input = fs::read_to_string("input.txt").unwrap();
   println!("Part 1 Solution: {}", part1(&input));
+  println!("Part 2 Solution: {}", part2(&input));
 }
