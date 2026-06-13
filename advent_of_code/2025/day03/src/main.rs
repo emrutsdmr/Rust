@@ -45,50 +45,37 @@ fn part1(banks: &Vec<Vec<u8>>) -> u64 {
 }
 
 fn part2(banks: &Vec<Vec<u8>>) -> u64 {
-  let mut sum: u64 = 0;
+  let mut sum = 0;
 
   for bank in banks {
-    let len = bank.len();
+    let mut number: u64 = 0;
+    let mut start = 0;
 
-    assert!(len == 15);
-    let mut num: u64 = 0;
-    let mut count = 3;
-    let mut ind = 0;
-    let mut chosen = bank[0];
-    let mut chosen_ind = 0;
+    for digits_left in (1..=12).rev() {
+      let end = bank.len() - digits_left;
 
-    while count > 0 && ind < 12{
-      let tmp_count = count;
-      for i in 1..=tmp_count {
-        if chosen < bank[ind + i] {
-          chosen = bank[ind + i];
-          chosen_ind = ind + i;
-          count -= 1;
+      let mut best_digit = bank[start];
+      let mut best_index = start;
+
+      for i in start..=end {
+        if bank[i] > best_digit {
+          best_digit = bank[i];
+          best_index = i;
         }
       }
-      num = num * 10 + chosen as u64;
-      if count >= 0 {
-        if  ind < chosen_ind && chosen_ind + 1 < 15{
-          ind = chosen_ind + 1;
-          chosen = bank[ind];
-        }
-        else{
-          ind += 1;
-          chosen = bank[ind];
-        }
-      }
+
+      number = number * 10 + best_digit as u64;
+      start = best_index + 1;
     }
-    let mut i = 0;
-    while ind < 12 && ind +i < 15 {
-      num = num * 10 + bank[ind + i] as u64;
-      i += 1;
-    }
-    sum += num;
+
+    println!("{}", number);
+    sum += number;
   }
+
   sum
 }
 
 fn main() {
   let banks = parse("input.txt");
-  println!("{}", part2(&banks));
+  println!("Sum: {}", part2(&banks));
 }
