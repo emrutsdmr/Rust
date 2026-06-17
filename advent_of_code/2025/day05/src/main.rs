@@ -29,33 +29,36 @@ fn parse(path: &str) -> (Vec<Range>, Vec<i64>) {
 
 fn part1(data: &(Vec<Range>, Vec<i64>)) -> usize {
   let (ranges, ids) = data;
-  let mut fresh_count = 0;
 
+  ids.iter()
+      .filter(|&&id| { // .filter(|id| **id > 3)
+          ranges
+              .iter()
+              .any(|&(lo, hi)| lo <= id && id <= hi)
+      })
+      .count()
 
-//    for &id in ids {
-//        for &(lo, hi) in ranges {
-//            if lo <= id && id <= hi {
-//                // ...
-//            }
-//        }
+//  let mut fresh_count = 0;
+//
+//  for id in ids {
+//    let mut fresh = false;
+//
+//    for (lo, hi) in ranges {
+//      if *lo <= *id && *id <= *hi {
+//        fresh = true;
+//        break;
+//      }
 //    }
-  for id in ids {
-    let mut fresh = false;
+//
+//    if fresh {
+//      fresh_count += 1;
+//    }
+//  }
+//
+//  fresh_count
 
-    for (lo, hi) in ranges {
-      if *lo <= *id && *id <= *hi {
-        fresh = true;
-        break;
-      }
-    }
-
-    if fresh {
-      fresh_count += 1;
-    }
-  }
-
-  fresh_count
 }
+
 
 fn main() {
   let data = parse("input.txt");
