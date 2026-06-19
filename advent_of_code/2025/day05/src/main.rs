@@ -59,9 +59,42 @@ fn part1(data: &(Vec<Range>, Vec<i64>)) -> usize {
 
 }
 
+fn part2(ranges: &mut [Range]) -> i64 {
+  ranges.sort_unstable_by_key(|&(lo, _)| lo);
+  let mut merged: Vec<Range> = Vec::new();
+
+  let &(mut first_lo, mut last_hi) = ranges.first().unwrap();
+
+  for &(lo, hi) in ranges.iter().skip(1) {
+    // last_hi = last_hi.max(hi);
+    if lo <= last_hi + 1 {
+      if last_hi < hi {
+        last_hi = hi;
+      }
+    }
+    else {
+      merged.push((first_lo, last_hi));
+      first_lo = lo;
+      last_hi = hi;
+    }
+  }
+
+  merged.push((first_lo, last_hi));
+
+  // merged.iter().map(|&(lo, hi) hi - lo + 1).sum()
+  let mut sum = 0;
+  for (lo, hi) in merged {
+    sum += hi - lo + 1;
+  }
+
+  sum
+}
 
 fn main() {
-  let data = parse("input.txt");
+  let mut data = parse("input.txt");
 
   println!("Part 1: {}", part1(&data));
+//  let (ranges, _) = &data;
+//  println!("Part 2: {}", part2(ranges));
+  println!("Part 2: {}", part2(&mut data.0));
 }
