@@ -26,9 +26,44 @@ fn part1(red_tiles: &[(i64, i64)]) -> i64 {
   result
 }
 
+fn part2(red_tiles: &[(i64,i64)]) -> i64 {
+  let mut result = 0;
+  let size: usize = red_tiles.len();
+
+  if size == 0 {
+    return 0;
+  }
+
+  let mut xs = Vec::with_capacity(size);
+  let mut ys = Vec::with_capacity(size);
+
+  for &(x,y) in red_tiles.iter() {
+    xs.push(x);
+    ys.push(y);
+  }
+
+  xs.sort();
+  xs.dedup();
+
+  ys.sort();
+  ys.dedup();
+
+  let mut compressed = Vec::with_capacity(size);
+
+  for &(x, y) in red_tiles.iter() {
+    let cx = xs.binary_search(&x).unwrap();
+    let cy = ys.binary_search(&y).unwrap();
+    compressed.push((cx, cy));
+  }
+
+  println!("{:?}", compressed);
+
+  return result;
+}
+
 fn main() {
   let input = parse("input.txt");
-  let answer = part1(&input);
 
-  println!("Part 1: {}", answer);
+//println!("Part 1: {}", part1(&input));
+  println!("Part 2: {}", part2(&input));
 }
