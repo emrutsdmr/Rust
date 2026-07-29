@@ -1,3 +1,5 @@
+use std::collections::{BTreeMap, HashMap, HashSet};
+
 fn parse(path: &str) -> Vec<(i64, i64)> {
   std::fs::read_to_string(path)
     .expect("Failed to read the file")
@@ -24,6 +26,35 @@ fn part1(red_tiles: &[(i64, i64)]) -> i64 {
   }
 
   result
+}
+
+struct Vertex {
+  values: (u32,u32),
+  neighbors: Vec<usize>,
+}
+
+impl Vertex {
+  pub fn new(x: u32, y: u32) -> Self {
+//    let values = (x, y);
+//    let mut neighbors = Vec::new();
+//    Self{values, neighbors}
+    Self{values: (x, y), neighbors: Vec::new()}
+  }
+}
+
+pub struct Field {
+  size_x: usize,
+  size_y: usize,
+  cur_longest: Vec<usize>,
+  longest: Vec<usize>,
+  start: usize,
+  visited: HashSet<usize>,
+
+  vertices: Vec<Vertex>,
+  vertex_map: HashMap<(u32, u32), usize>,
+
+  x_map: BTreeMap<u32, Vec<usize>>,
+  y_map: BTreeMap<u32, Vec<usize>>,
 }
 
 fn part2(red_tiles: &[(i64,i64)]) -> i64 {
@@ -56,7 +87,7 @@ fn part2(red_tiles: &[(i64,i64)]) -> i64 {
     compressed.push((cx, cy));
   }
 
-  println!("{:?}", compressed);
+//  println!("{:?}", compressed);
 
   return result;
 }
