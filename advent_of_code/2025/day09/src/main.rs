@@ -29,12 +29,12 @@ fn part1(red_tiles: &[(i64, i64)]) -> i64 {
 }
 
 struct Vertex {
-  values: (u32,u32),
+  values: (usize,usize),
   neighbors: Vec<usize>,
 }
 
 impl Vertex {
-  pub fn new(x: u32, y: u32) -> Self {
+  pub fn new(x: usize, y: usize) -> Self {
 //    let values = (x, y);
 //    let mut neighbors = Vec::new();
 //    Self{values, neighbors}
@@ -51,10 +51,10 @@ pub struct Field {
   visited: HashSet<usize>,
 
   vertices: Vec<Vertex>,
-  vertex_map: HashMap<(u32, u32), usize>,
+  vertex_map: HashMap<(usize, usize), usize>,
 
-  x_map: BTreeMap<u32, Vec<usize>>,
-  y_map: BTreeMap<u32, Vec<usize>>,
+  x_map: BTreeMap<usize, Vec<usize>>,
+  y_map: BTreeMap<usize, Vec<usize>>,
 }
 
 impl Field {
@@ -73,7 +73,7 @@ impl Field {
     }
   }
 
-  pub fn create_vertexes(&mut self, compressed: &[(u32, u32)]) {
+  pub fn create_vertexes(&mut self, compressed: &[(usize, usize)]) {
     for &(x, y) in compressed {
       let idx = self.vertices.len();
       self.vertices.push(Vertex::new(x, y));
@@ -147,6 +147,10 @@ fn part2(red_tiles: &[(i64,i64)]) -> i64 {
   }
 
 //  println!("{:?}", compressed);
+
+  let mut field = Field::new();
+  field.create_vertexes(&compressed);
+  field.connect_vertexes();
 
   return result;
 }
