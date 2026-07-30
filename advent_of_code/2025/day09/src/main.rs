@@ -57,6 +57,65 @@ pub struct Field {
   y_map: BTreeMap<u32, Vec<usize>>,
 }
 
+impl Field {
+  pub fn new() -> Self {
+    Self {
+      size_x: 0,
+      size_y: 0,
+      cur_longest: Vec::new(),
+      longest: Vec::new(),
+      start: 0,
+      visited: HashSet::new(),
+      vertices: Vec::new(),
+      vertex_map: HashMap::new(),
+      x_map: BTreeMap::new(),
+      y_map: BTreeMap::new(),
+    }
+  }
+
+  pub fn create_vertexes(&mut self, compressed: &[(u32, u32)]) {
+    for &(x, y) in compressed {
+      let idx = self.vertices.len();
+      self.vertices.push(Vertex::new(x, y));
+
+      self.vertex_map.insert((x, y), idx);
+      self.x_map.entry(x).or_default().push(idx);
+      self.y_map.entry(y).or_default().push(idx);
+    }
+
+    self.size_x = self.x_map.len();
+    self.size_y = self.y_map.len();
+  }
+
+  pub fn connect_vertexes(&mut self) {
+    let x_cols: Vec<Vec<usize>> = self.x_map.values().cloned().collect();
+    for mut col in x_cols {
+      if col.len() < 2 {
+        continue;
+      }
+      col.sort_by_key(|&idx| self.vertices[idx].values.1);
+      for i in 0..col.len() - 1 {
+        let (a, b) = (col[i], col[i + 1]);
+        self.vertices[a].neighbors.push(b);
+        self.vertices[b].neighbors.push(a);
+      }
+    }
+
+    let y_rows: Vec<Vec<usize>> = self.y_map.values().cloned().collect();
+    for mut row in y_rows {
+      if row.len() < 2 {
+        continue;
+      }
+      row.sort_by_key(|&idx| self.vertices[idx].values.0);
+      for i in 0..row.len() - 1 {
+        let (a, b) = (row[i], row[i + 1]);
+        self.vertices[a].neighbors.push(b);
+        self.vertices[b].neighbors.push(a);
+      }
+    }
+  }
+}
+
 fn part2(red_tiles: &[(i64,i64)]) -> i64 {
   let mut result = 0;
   let size: usize = red_tiles.len();
