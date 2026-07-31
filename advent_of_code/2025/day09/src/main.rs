@@ -114,6 +114,52 @@ impl Field {
       }
     }
   }
+
+  pub fn find_polygon(&mut self) -> Vec<usize> {
+    let mut i: usize = 0;
+    while (i as usize) < self.size_x {
+      self.start = self.x_map[&i][0];
+
+      let fake_start = Vertex {
+        values: self.vertices[self.start].values,
+        neighbors: self.vertices[self.start].neighbors.clone(),
+      };
+      self.vertices.push(fake_start);
+      let fake_idx = self.vertices.len() - 1;
+
+      let found = self.find_polygon_helper(fake_idx);
+      self.vertices.pop();
+
+      if found {
+        break;
+      }
+      i += 1;
+      self.visited.clear();
+    }
+    self.longest.clone()
+  }
+
+  fn find_polygon_helper(&mut self, vx: usize) -> bool {
+    if vx == self.start {
+      if self.cur_longest.len() > self.longest.len() {
+        self.longest = self.cur_longest.clone();
+      }
+      return true;
+    }
+    if self.visited.contains(&vx) || self.vertices[vx].neighbors.is_empty() {
+      return false;
+    }
+    self.visited.insert(vx);
+
+    let neighbors = self.vertices[vx].neighbors.clone();
+    for nbr in neighbors {
+      self.cur_longest.push(nbr);
+      self.find_polygon_helper(nbr);
+      self.cur_longest.pop();
+    }
+    false
+  }
+
 }
 
 fn part2(red_tiles: &[(i64,i64)]) -> i64 {
@@ -151,6 +197,11 @@ fn part2(red_tiles: &[(i64,i64)]) -> i64 {
   let mut field = Field::new();
   field.create_vertexes(&compressed);
   field.connect_vertexes();
+
+  let longest = field.find_polygon();
+  for &idx in &longest {
+    println!("{:?}", field.vertices[idx].values);
+  }
 
   return result;
 }
